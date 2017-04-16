@@ -112,6 +112,7 @@ public class ShortestPath {
 			System.out.println();
 		}
 	}
+	
 	private static char getpoint(int i){
 		char c = 0;
 		switch (i) {
