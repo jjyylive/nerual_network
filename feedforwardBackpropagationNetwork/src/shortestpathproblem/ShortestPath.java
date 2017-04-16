@@ -1,8 +1,196 @@
 package shortestpathproblem;
 
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Queue;
+import java.util.TreeMap;
+import java.util.Vector;
+
+import javax.print.attribute.Size2DSyntax;
+
+import org.w3c.dom.ls.LSInput;
+
+
 public class ShortestPath {
-	public static void main(String[] args) {
+	private static final int SIZE = 6;
+	private static double[][] Graph=null;
+	private static Map<Integer, List<Character>> map=new TreeMap<>();
+	private static double[] minDist=new double[SIZE];
+	private static boolean[] S=null;
+
+
+
+	private static void init(){
+		S=new boolean[]{false,false,false,false,false,false};
+
+		Graph=new double[][]{
+				{ 0, 7, 9,-1,-1,14},
+				{ 7, 0,10,15,-1,-1},
+				{ 9,10, 0,11,-1, 2},
+				{-1,15,11, 0, 6,-1},
+				{-1,-1,-1, 6, 0, 9},
+				{14,-1, 2,-1, 9, 0},
+		};
+		printmatrix();
+		for (int i = 0; i < SIZE; i++) {
+			List< Character> list =new LinkedList<>();
+			map.put(i, list);
+		}
+
+	}
+	private static void findmin(int start,int end){
+		boolean[] U=new boolean[6];
+		double currentMinDist=Integer.MAX_VALUE;
+		int pos=start-1;
+		int cur=-1;
+		List<Character> Temp=new LinkedList<>();
+
+		boolean isEnd=false;
+		S[start-1]=true;
+		for (int i = 0; i <SIZE; i++) {
+			updatePath(i,pos);
+		}
+		for (int i = 0; i < SIZE; i++) {
+			minDist[i]=Graph[i][pos];			
+		}
+		double minv=Integer.MAX_VALUE;
+	    for (int i = 0; i <SIZE; i++) {
+			if(pos!=i&&minDist[i]!=-1&&minDist[i]<minv){
+				pos=i;
+				minv=minDist[i];
+			}
+			
+		}
+		for (int i = 0; i < S.length; i++) {
+			if(S[i]!=true) updatePath(i, i);
+		}
+		while (!isEnd) {
+			if(nextpoint(S)==-1){
+				isEnd=true;
+				printPath();
 		
+			}
+			for (int i = 0; i < U.length; i++) {
+				if(S[i]!=true) U[i]=false;
+			}
+			
+			currentMinDist=Integer.MAX_VALUE;
+			for(int i=0;i<SIZE;i++){
+				if(minDist[i]==-1) minDist[i]=Integer.MAX_VALUE;
+				if(i!=pos&&Graph[i][pos]!=-1&&U[i]==false&&S[i]!=true){
+					if(minDist[i]>=minDist[pos]+Graph[i][pos]){
+						minDist[i]=minDist[pos]+Graph[i][pos];
+						Temp=map.get(pos);
+						//System.out.println(Temp);
+						Temp.add(getpoint(i));
+						map.remove(i);
+						map.put(i, Temp);
+						System.out.println(i+" "+Temp);
+					}														
+				}
+				U[i]=true;				
+			}
+			S[pos]=true;
+			for (int i = 0; i < SIZE; i++) {
+				if(minDist[i]<currentMinDist&&S[i]!=true){
+				 currentMinDist=minDist[i];
+				  cur=i;
+				}
+			}
+			pos=cur;
+
+		}
+
 	}
 
+	private static void printmatrix(){
+		for (int i = 0; i < SIZE; i++) {
+			for (int j = 0; j < SIZE; j++) {
+				System.out.print(Graph[i][j]+"   ");
+			}
+			System.out.println();
+		}
+	}
+	private static char getpoint(int i){
+		char c = 0;
+		switch (i) {
+		case 0:c= 'A';break;	
+		case 1:c= 'B';break;
+		case 2:c= 'C';break;
+		case 3:c= 'D';break;
+		case 4:c= 'E';break;
+		case 5:c= 'F';break;
+		default : break;
+		}
+		return c;
+	}
+
+	private static int  nextpoint(boolean[] bool){
+		for (int i = 0; i < bool.length; i++) {
+			if(!bool[i]){
+				return i;
+			}
+		}
+		//全为真，返回-1
+		return -1;
+	}
+	private static void updatePath(int pointV,int val){
+		char v;	
+		v=getpoint(val);
+		List<Character> list=map.get(pointV);
+		list.add(v);
+		map.put(pointV, list);			
+	}
+
+	private static void printPath(){
+		for (int i = 0; i < SIZE; i++) {
+			List<Character> list = map.get(i);
+			for (int j = 0; j < list.size(); j++) {
+				System.out.print(list.get(j)+" ");
+			}
+			System.out.println();
+		}
+	}
+	public static void main(String[] args) {
+		init();
+		findmin(1, 6);
+		for (int i = 0; i < SIZE; i++) {
+			System.out.println(minDist[i]);;
+		}
+
+//				List<Character> list = new LinkedList<>();
+//				List< Character> list2 =new LinkedList<>();
+//				list.add('c');
+//				list.add('a');
+//				list.add('f');
+//				list.add('e');
+//				list.add('b');
+//		         list2=list;
+//				for (int i = 0; i < list2.size(); i++) {
+//					System.out.print(list2.get(i));
+//				}
+//               System.err.println(list);
+//               System.err.println(list2);
+
+	}
+
+
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
